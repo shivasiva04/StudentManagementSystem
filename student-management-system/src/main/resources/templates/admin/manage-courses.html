@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Courses</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Manage Courses</h1>
+
+    <a href="/admin/dashboard" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded hover:bg-gray-300 transition duration-200">
+        ← Back
+    </a>
+
+
+    <!-- Add Course Form -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-xl font-semibold mb-4">Add New Course</h2>
+        <form th:action="@{/admin/courses/add}" method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Course Name Dropdown -->
+            <select name="name" class="p-2 border rounded" required>
+                <option disabled selected value="">Select Course</option>
+                <option>Data Structures</option>
+                <option>Operating Systems</option>
+                <option>Computer Networks</option>
+                <option>Database Management Systems</option>
+                <option>Web Technologies</option>
+                <option>Artificial Intelligence</option>
+                <option>Machine Learning</option>
+                <option>Mobile App Development</option>
+            </select>
+
+            <!-- Course Code (auto-filled client side) -->
+            <input id="code" name="code" type="text" placeholder="Course Code" class="p-2 border rounded bg-gray-100" readonly required />
+
+            <select id="department" name="department" class="p-2 border rounded" required>
+                <option disabled selected value="">Select Department</option>
+                <option>Computer Science</option>
+                <option>Information Technology</option>
+                <option>Electronics</option>
+                <option>Mechanical</option>
+            </select>
+
+            <!-- Semester Dropdown -->
+            <select name="semester" class="p-2 border rounded" required>
+                <option disabled selected value="">Select Semester</option>
+                <option th:each="i : ${#numbers.sequence(1,8)}"
+                        th:value="|Semester ${i}|"
+                        th:text="|Semester ${i}|">
+                </option>
+            </select>
+
+            <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 col-span-3">Add Course</button>
+        </form>
+    </div>
+
+    <!-- Semester Filter -->
+    <div class="flex justify-end mb-4">
+        <form th:action="@{/admin/courses}" method="get" class="flex items-center gap-2">
+            <label for="filter" class="font-medium">Filter by Semester:</label>
+            <select name="semester" id="filter" class="p-2 border rounded" onchange="this.form.submit()">
+                <option value="" th:selected="${selectedSemester == null}">All Semesters</option>
+                <option th:each="i : ${#numbers.sequence(1,8)}"
+                        th:value="|Semester ${i}|"
+                        th:text="|Semester ${i}|"
+                        th:selected="${selectedSemester == 'Semester ' + i}">
+                </option>
+            </select>
+        </form>
+    </div>
+
+    <!-- Course List -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Course List</h2>
+        <table class="w-full table-auto border">
+            <thead class="bg-gray-200">
+            <tr>
+                <th class="p-2 border">Course Name</th>
+                <th class="p-2 border">Code</th>
+                <th class="p-2 border">Department</th>
+                <th class="p-2 border">Semester</th>
+                <th class="p-2 border">Actions</th>
+            </tr>
+
+            </thead>
+            <tbody>
+            <tr th:each="course : ${courses}" class="text-center">
+                <td th:text="${course.name}" class="p-2 border"></td>
+                <td th:text="${course.code}" class="p-2 border"></td>
+                <td th:text="${course.department}" class="p-2 border"></td>
+                <td th:text="${course.semester}" class="p-2 border"></td>
+                <td class="p-2 border">
+                    <a th:href="@{'/admin/courses/delete/' + ${course.id}}" class="text-red-600 hover:underline">Delete</a>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(courses)}">
+                <td colspan="4" class="text-center p-4 text-gray-500">No courses found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Auto-generate course code JS -->
+<script>
+    const nameDropdown = document.querySelector("select[name='name']");
+    const codeInput = document.getElementById("code");
+    const deptDropdown = document.getElementById("department");
+
+    const courseDepartmentMap = {
+        "Data Structures": "Computer Science",
+        "Operating Systems": "Computer Science",
+        "Computer Networks": "Computer Science",
+        "Database Management Systems": "Information Technology",
+        "Web Technologies": "Information Technology",
+        "Artificial Intelligence": "Computer Science",
+        "Machine Learning": "Computer Science",
+        "Mobile App Development": "Information Technology"
+    };
+
+    nameDropdown.addEventListener("change", () => {
+        const name = nameDropdown.value;
+
+        // Generate course code
+        const initials = name.split(" ").map(word => word.charAt(0).toUpperCase()).join("");
+        const randomCode = Math.floor(Math.random() * 900 + 100); // Random 3-digit number
+        codeInput.value = `${initials}${randomCode}`;
+
+        // Set department <automatically></automatically>
+        const dept = courseDepartmentMap[name];
+        deptDropdown.value = dept || "";
+    });
+</script>
+
+
+</body>
+</html>

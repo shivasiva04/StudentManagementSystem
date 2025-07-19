@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+    <div class="w-64 bg-blue-700 text-white p-6">
+        <h2 class="text-xl font-bold mb-6">Admin Panel</h2>
+        <ul class="space-y-4">
+            <li><a href="#" class="hover:underline">Dashboard</a></li>
+            <li><a href="/admin/students" class="hover:underline">Manage Students</a></li>
+            <li><a href="/admin/courses" class="hover:underline">Courses</a></li>
+            <li><a href="/admin/staff/add" class="hover:underline">Teachers</a></li>
+            <li><a href="#" class="hover:underline">Attendance</a></li>
+            <li><a href="#" class="hover:underline">Payments</a></li>
+            <li><a href="#" class="hover:underline">Settings</a></li>
+        </ul>
+    </div>
+
+    <div class="flex-1 p-8">
+        <h1 class="text-3xl font-bold mb-4">Admin Dashboard</h1>
+        <div class="grid grid-cols-3 gap-6">
+            <div class="bg-white shadow-md rounded-lg p-6">Total Students: 4.5K</div>
+            <div class="bg-white shadow-md rounded-lg p-6">Total Courses: 300</div>
+            <div class="bg-white shadow-md rounded-lg p-6">Earnings: $30K</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

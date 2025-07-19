@@ -1,0 +1,146 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Student Signup</title>-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--</head>-->
+<!--<body class="bg-gray-100 flex items-center justify-center h-screen">-->
+
+<!--<div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">-->
+<!--    <h2 class="text-2xl font-bold text-center mb-6">Student Signup</h2>-->
+
+<!--    <form th:action="@{/signup}" method="post" class="space-y-4">-->
+<!--        <div>-->
+<!--            <label for="username" class="block font-medium">Username</label>-->
+<!--            <input type="text" name="username" id="username" required-->
+<!--                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />-->
+<!--        </div>-->
+
+<!--        <div>-->
+<!--            <label for="email" class="block font-medium">Email</label>-->
+<!--            <input type="email" name="email" id="email" required-->
+<!--                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />-->
+<!--        </div>-->
+
+<!--        <div>-->
+<!--            <label for="password" class="block font-medium">Phone Number (as Password)</label>-->
+<!--            <input type="password" name="password" id="password" required-->
+<!--                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />-->
+<!--            <p class="text-xs text-gray-500 mt-1">⚠️ Use your registered mobile number as password.</p>-->
+<!--        </div>-->
+
+<!--        <div>-->
+<!--            <label for="role" class="block font-medium">Role</label>-->
+<!--            <select name="role" id="role" required-->
+<!--                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500">-->
+<!--                <option value="STUDENT">Student</option>-->
+<!--                <option value="ADMIN">Admin</option>-->
+<!--            </select>-->
+<!--        </div>-->
+
+<!--        <button type="submit"-->
+<!--                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">-->
+<!--            Signup-->
+<!--        </button>-->
+
+<!--        &lt;!&ndash; Show error &ndash;&gt;-->
+<!--        <p th:if="${error}" class="text-red-600 text-sm mt-2 text-center" th:text="${error}"></p>-->
+<!--    </form>-->
+
+<!--    <div class="mt-4 text-center">-->
+<!--        <a href="/" class="text-blue-600 hover:underline text-sm">Back to Login</a>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Signup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+
+    <h2 class="text-2xl font-bold text-center mb-6">Signup</h2>
+
+    <form th:action="@{/signup}" method="post" class="space-y-4" id="signupForm">
+
+        <!-- Role select always visible at the top -->
+        <div>
+            <label for="role" class="block font-medium mb-1">Select Role</label>
+            <select name="role" id="role" required
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500">
+                <option value="" disabled selected>Select Role</option>
+                <option value="STUDENT">Student</option>
+                <option value="ADMIN">Admin</option>
+                <option value="STAFF">Staff</option>
+            </select>
+        </div>
+
+        <!-- Username -->
+        <div>
+            <label for="username" class="block font-medium">Username</label>
+            <input type="text" name="username" id="username" required
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+        </div>
+
+        <!-- Email -->
+        <div>
+            <label for="email" class="block font-medium">Email</label>
+            <input type="email" name="email" id="email" required
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+        </div>
+
+        <!-- Password / Phone number as password -->
+        <div id="passwordDiv">
+            <label for="password" class="block font-medium" id="passwordLabel">Password</label>
+            <input type="password" name="password" id="password" required
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+            <p id="passwordNote" class="text-xs text-gray-500 mt-1 hidden">⚠️ Use your registered mobile number as password.</p>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded mt-4">
+            Signup
+        </button>
+
+        <!-- Show error -->
+        <p th:if="${error}" class="text-red-600 text-sm mt-2 text-center" th:text="${error}"></p>
+    </form>
+
+    <div class="mt-4 text-center">
+        <a href="/" class="text-blue-600 hover:underline text-sm">Back to Login</a>
+    </div>
+
+</div>
+
+<script>
+    const roleSelect = document.getElementById('role');
+    const passwordLabel = document.getElementById('passwordLabel');
+    const passwordNote = document.getElementById('passwordNote');
+
+    roleSelect.addEventListener('change', () => {
+      const role = roleSelect.value;
+      if (role === 'STUDENT') {
+        passwordLabel.textContent = 'Phone Number (as Password)';
+        passwordNote.classList.remove('hidden');
+      } else {
+        passwordLabel.textContent = 'Password';
+        passwordNote.classList.add('hidden');
+      }
+    });
+</script>
+
+</body>
+</html>

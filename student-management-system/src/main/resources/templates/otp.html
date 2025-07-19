@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Verify OTP</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+<form th:action="@{/verify-otp}" method="post" class="bg-white p-6 rounded-lg shadow-md w-96">
+    <h2 class="text-2xl font-bold mb-4 text-center">Enter OTP</h2>
+    <input type="hidden" name="username" th:value="${username}"/>
+    <input type="text" name="otp" placeholder="Enter OTP" required class="w-full p-2 mb-3 border rounded"/>
+    <button type="submit" class="bg-purple-500 text-white px-4 py-2 rounded w-full">Verify</button>
+    <p class="mt-3 text-center text-sm text-red-500" th:if="${error}" th:text="${error}"></p>
+</form>
+</body>
+</html>
