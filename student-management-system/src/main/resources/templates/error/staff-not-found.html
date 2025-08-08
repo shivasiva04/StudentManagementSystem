@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Staff Not Found</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body class="bg-red-50 text-center p-10">
+<h1 class="text-3xl font-bold text-red-600">Staff Account Not Found</h1>
+<p class="text-lg mt-4" th:text="${error}">Something went wrong.</p>
+<a th:href="@{/login}" class="text-blue-600 underline mt-6 inline-block">Return to Login</a>
+</body>
+</html>

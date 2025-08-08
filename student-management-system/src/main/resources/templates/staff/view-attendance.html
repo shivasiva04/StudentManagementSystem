@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Attendance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+
+
+
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">
+        Attendance Records for <span th:text="${course.name}">Course Name</span>
+    </h2>
+
+    <!-- Date Filter Form -->
+    <form action="/staff/attendance/view" method="get" class="mb-4 flex flex-col sm:flex-row items-center gap-4">
+        <input type="hidden" name="courseId" th:value="${course.id}" />
+        <label class="flex items-center gap-2">
+            <span class="text-gray-700">Select Date:</span>
+            <input type="date" name="date" th:value="${filterDate}" class="px-3 py-2 border border-gray-300 rounded-md" onchange="this.form.submit()" />
+        </label>
+    </form>
+
+    <!-- No records found -->
+    <div th:if="${#lists.isEmpty(attendanceRecords)}" class="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-md">
+        No attendance records found for the selected date.
+    </div>
+
+    <!-- Attendance Table -->
+    <div th:if="${!#lists.isEmpty(attendanceRecords)}" class="overflow-x-auto">
+        <table class="w-full mt-4 text-sm text-left text-gray-700 border border-gray-300 rounded-lg">
+            <thead class="bg-gray-200 text-gray-900">
+            <tr>
+                <th class="px-4 py-2 border">Student</th>
+                <th class="px-4 py-2 border">Date</th>
+                <th class="px-4 py-2 border">Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="record : ${attendanceRecords}">
+                <td class="px-4 py-2 border" th:text="${record.student.name}">Student Name</td>
+                <td class="px-4 py-2 border" th:text="${record.date}">Date</td>
+                <td class="px-4 py-2 border">
+    <span th:text="${record.present} ? 'Present' : 'Absent'"
+          th:classappend="${record.present} ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'">
+    </span>
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="flex justify-end space-x-4 my-4">
+    <a th:href="@{'/staff/attendance/export/excel'(courseId=${course.id}, date=${date})}"
+       class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Download Excel</a>
+
+    <a th:href="@{'/staff/attendance/export/pdf'(courseId=${course.id}, date=${date})}"
+       class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">Download PDF</a>
+</div>
+
+</body>
+</html>

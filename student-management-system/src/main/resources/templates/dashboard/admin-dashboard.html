@@ -1,32 +1,160 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard with Calendar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .calendar-header {
+            background: linear-gradient(to bottom, #B4EC51, #429321);
+            color: white;
+        }
+        .selected-day {
+            background: #429321;
+            color: white;
+            border-radius: 50%;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
 <div class="flex h-screen">
-    <div class="w-64 bg-blue-700 text-white p-6">
+    <!-- Sidebar -->
+    <div class="w-64 text-white p-6" style="background: linear-gradient(to bottom, #B4EC51, #429321);">
         <h2 class="text-xl font-bold mb-6">Admin Panel</h2>
         <ul class="space-y-4">
-            <li><a href="#" class="hover:underline">Dashboard</a></li>
+            <li><a href="/admin/staff/add" class="hover:underline">Staff</a></li>
             <li><a href="/admin/students" class="hover:underline">Manage Students</a></li>
             <li><a href="/admin/courses" class="hover:underline">Courses</a></li>
-            <li><a href="/admin/staff/add" class="hover:underline">Teachers</a></li>
-            <li><a href="#" class="hover:underline">Attendance</a></li>
-            <li><a href="#" class="hover:underline">Payments</a></li>
-            <li><a href="#" class="hover:underline">Settings</a></li>
+            <li><a href="/admin/attendance" class="hover:underline">Attendance</a></li>
+            <li><a href="/admin/fees" class="hover:underline">Fees</a></li>
+            <li><a href="/admin/settings" class="hover:underline">Settings</a></li>
         </ul>
     </div>
 
-    <div class="flex-1 p-8">
+    <!-- Main Content -->
+    <div class="flex-1 p-8 overflow-auto">
         <h1 class="text-3xl font-bold mb-4">Admin Dashboard</h1>
-        <div class="grid grid-cols-3 gap-6">
-            <div class="bg-white shadow-md rounded-lg p-6">Total Students: 4.5K</div>
-            <div class="bg-white shadow-md rounded-lg p-6">Total Courses: 300</div>
-            <div class="bg-white shadow-md rounded-lg p-6">Earnings: $30K</div>
+
+        <!-- Top Stats Section -->
+        <div class="grid grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center">
+                <img src="/imagess/students.png" class="w-8 h-8 mb-2" alt="Students" />
+                <p class="text-gray-600">Students</p>
+                <h2 class="text-xl font-bold" th:text="${totalStudents}">0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center">
+                <img src="/imagess/staff.png" class="w-8 h-8 mb-2" alt="Faculty" />
+                <p class="text-gray-600">Faculty</p>
+                <h2 class="text-xl font-bold" th:text="${totalStaff}">0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center">
+                <img src="/imagess/course.png" class="w-8 h-8 mb-2" alt="Courses" />
+                <p class="text-gray-600">Courses</p>
+                <h2 class="text-xl font-bold" th:text="${totalCourses}">0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center">
+                <img src="/imagess/money.png" class="w-8 h-8 mb-2" alt="Earnings" />
+                <p class="text-gray-600">Earnings</p>
+                <h2 class="text-xl font-bold" th:text="${earnings}">₹0</h2>
+            </div>
+        </div>
+
+
+
+        <!-- Calendar and Notice Board Section -->
+        <div class="flex flex-col md:flex-row gap-6 w-full">
+            <!--  Notice Board -->
+            <div class="w-full md:w-2/3 lg:w-3/4 bg-[linear-gradient(to_bottom,_#e8f8d0,_#c7e8a1)] border-l-4 border-[#429321] text-[#2e4d1d] p-6 rounded-2xl shadow-md">
+                <div class="flex items-center gap-4">
+                    <div class="text-3xl flex-shrink-0">📢</div>
+                    <div class="flex-1">
+                        <h2 class="text-2xl font-bold leading-tight">Notice Board</h2>
+                        <ul class="mt-2 space-y-1 text-base list-disc list-inside">
+                            <li>Semester exams begin on <strong>August 5</strong>.</li>
+                            <li>Fees deadline: <strong>July 30</strong>. Pay online or offline.</li>
+                            <li>Faculty meeting: <strong>July 28 at 10:00 AM</strong> in Hall 1.</li>
+                            <li>New course “AI & ML” starts <strong>August 1</strong>.</li>
+                            <li>Update your profiles before <strong>July 31</strong>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <!--  Calendar -->
+            <div class="w-full md:w-1/3 bg-white rounded-2xl shadow-md overflow-hidden">
+                <!-- Calendar Header with gradient -->
+                <div class="bg-gradient-to-b from-lime-300 to-green-700 text-white p-4 flex justify-between items-center rounded-t-2xl">
+                    <button id="prevMonth" class="font-bold">&lt;</button>
+                    <span id="monthYear" class="font-semibold"></span>
+                    <button id="nextMonth" class="font-bold">&gt;</button>
+                </div>
+                <!-- Calendar Body -->
+                <div class="p-5">
+                    <div class="grid grid-cols-7 text-xs text-gray-600 mb-1 text-center font-semibold">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div>
+                        <div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
+                    <div id="calendarDays" class="grid grid-cols-7 text-center gap-1 text-sm"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    const monthYear = document.getElementById("monthYear");
+    const calendarDays = document.getElementById("calendarDays");
+    const prevMonthBtn = document.getElementById("prevMonth");
+    const nextMonthBtn = document.getElementById("nextMonth");
+
+    let currentDate = new Date();
+
+    function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const prevLastDay = new Date(year, month, 0);
+
+        const totalDays = lastDay.getDate();
+        const prevDays = firstDay.getDay();
+
+        monthYear.innerText = currentDate.toLocaleString("default", { month: "long" }) + " " + year;
+
+        let daysHTML = "";
+
+        for (let x = prevDays; x > 0; x--) {
+            daysHTML += `<div class="text-gray-300">${prevLastDay.getDate() - x + 1}</div>`;
+        }
+
+        for (let i = 1; i <= totalDays; i++) {
+            let today = new Date();
+            let classes = "cursor-pointer p-1";
+            if (i === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+                classes += " selected-day";
+            }
+            daysHTML += `<div class="${classes}">${i}</div>`;
+        }
+
+        calendarDays.innerHTML = daysHTML;
+    }
+
+    prevMonthBtn.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
+    });
+
+    renderCalendar();
+</script>
 </body>
 </html>

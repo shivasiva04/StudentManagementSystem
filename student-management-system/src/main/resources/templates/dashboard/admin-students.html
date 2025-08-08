@@ -3,27 +3,43 @@
 <head>
     <title>Manage Students</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-btn {
+            background: linear-gradient(to bottom, #B4EC51, #429321);
+        }
+        .gradient-btn:hover {
+            filter: brightness(0.9);
+        }
+        .gradient-heading {
+            background: linear-gradient(to right, #B4EC51, #429321);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-form-header {
+            background: linear-gradient(to right, #B4EC51, #429321);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 <body class="p-6 bg-gray-100 min-h-screen">
 
 <div class="max-w-6xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6 text-center">Admin - Manage Students</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center gradient-heading">Admin - Manage Students</h1>
 
     <!-- Buttons Row -->
     <div class="flex justify-end space-x-4 mb-4">
-        <button onclick="openModal()" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">View Departments</button>
+        <button onclick="openModal()" class="gradient-btn text-white px-4 py-2 rounded hover:opacity-90">View Departments</button>
     </div>
 
-    <a href="/admin/dashboard" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded hover:bg-gray-300 transition duration-200">
+    <a href="/admin/dashboard" class="inline-flex items-center px-4 py-2 gradient-btn text-white text-sm font-medium rounded hover:opacity-90 transition duration-200">
         ← Back
     </a>
 
-
     <!-- Add Student Form -->
     <form th:action="@{/admin/students/add}" method="post" class="bg-white p-6 shadow rounded mb-8" th:object="${student}">
-
-
-        <h2 class="text-xl font-semibold mb-4">Add New Student</h2>
+        <h2 class="text-xl font-semibold mb-4 gradient-heading">Add New Student</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <input type="text" name="id" placeholder="Student ID" class="p-2 border rounded" required>
             <input type="text" name="name" placeholder="Name" class="p-2 border rounded" required>
@@ -41,7 +57,7 @@
 
             <input type="email" name="email" placeholder="Email" class="p-2 border rounded" required>
             <input type="text" name="phone" placeholder="Phone" class="p-2 border rounded" required>
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-full hover:bg-blue-600">
+            <button type="submit" class="gradient-btn text-white px-4 py-2 rounded col-span-full hover:opacity-90">
                 Add Student
             </button>
         </div>
@@ -54,7 +70,7 @@
     <div class="bg-white shadow rounded overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-100">
-            <tr>
+            <tr class="text-xl font-bold gradient-heading">
                 <th class="px-4 py-2 text-left">ID</th>
                 <th class="px-4 py-2 text-left">Name</th>
                 <th class="px-4 py-2 text-left">Department(s)</th>
@@ -68,7 +84,6 @@
                 <td class="px-4 py-2" th:text="${student.id}"></td>
                 <td class="px-4 py-2" th:text="${student.name}"></td>
                 <td class="px-4 py-2" th:text="${student.department}"></td>
-
                 <td class="px-4 py-2" th:text="${student.email}"></td>
                 <td class="px-4 py-2" th:text="${student.phone}"></td>
                 <td class="px-4 py-2">
@@ -84,7 +99,7 @@
 <div id="courseModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white w-full max-w-lg p-6 rounded shadow-lg">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">All Departments</h2>
+            <h2 class="text-xl font-bold gradient-heading">All Departments</h2>
             <button onclick="closeModal()" class="text-gray-600 hover:text-black text-xl">&times;</button>
         </div>
         <ul class="list-disc list-inside space-y-2">

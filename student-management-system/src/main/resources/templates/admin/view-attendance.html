@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin - Attendance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-btn {
+            background: linear-gradient(to bottom, #B4EC51, #429321);
+        }
+        .gradient-btn:hover {
+            filter: brightness(0.9);
+        }
+        .gradient-heading {
+            background: linear-gradient(to right, #B4EC51, #429321);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-form-header {
+            background: linear-gradient(to right, #B4EC51, #429321);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6">
+<h1 class="text-3xl font-bold mb-6 gradient-heading">Attendance Records</h1>
+
+<!-- Filter Form -->
+<form id="filterForm" method="get" action="#" class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
+
+    <!-- Semester Filter -->
+    <select name="semester" class="p-2 rounded border auto-submit">
+        <option value="">All Semesters</option>
+        <option th:each="sem : ${allSemesters}"
+                th:value="${sem}"
+                th:selected="${sem == selectedSemester}"
+                th:text="${sem}">Semester</option>
+    </select>
+
+    <!-- Department Filter -->
+    <select name="department" class="p-2 rounded border auto-submit">
+        <option value="">All Departments</option>
+        <option th:each="dept : ${allDepartments}"
+                th:value="${dept}"
+                th:selected="${dept == selectedDepartment}"
+                th:text="${dept}">Department</option>
+    </select>
+
+    <!-- Course Filter -->
+    <select name="courseId" class="p-2 rounded border auto-submit">
+        <option value="">All Courses</option>
+        <option th:each="c : ${allCourses}"
+                th:value="${c.id}"
+                th:selected="${c.id == selectedCourseId}"
+                th:text="${c.name}">Course</option>
+    </select>
+
+    <!-- Staff Filter -->
+    <select name="staffId" class="p-2 rounded border auto-submit">
+        <option value="">All Staff</option>
+        <option th:each="s : ${allStaff}"
+                th:value="${s.id}"
+                th:selected="${s.id == selectedStaffId}"
+                th:text="${s.name}">Staff</option>
+    </select>
+
+
+    <!-- Date -->
+    <input type="date" name="date" th:value="${selectedDate}" class="p-2 rounded border auto-submit"/>
+
+    <!-- Button Removed (optional) -->
+    <!-- <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Apply Filter</button> -->
+</form>
+
+
+<a href="/admin/dashboard" class="inline-flex items-center px-4 py-2 gradient-btn text-white text-sm font-medium rounded hover:opacity-90 transition duration-200">
+    ← Back
+</a>
+
+<!-- Table -->
+<div class="overflow-x-auto bg-white shadow rounded-lg">
+    <table class="min-w-full table-auto">
+        <thead class="bg-gray-200 text-left">
+        <tr class="text-xl font-bold gradient-heading">
+            <th class="p-4">Student</th>
+            <th class="p-4">Course</th>
+            <th class="p-4">Date</th>
+            <th class="p-4">Status</th>
+            <th class="p-4">Marked By</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="record : ${attendanceList}" class="border-b hover:bg-gray-100">
+            <td class="p-4" th:text="${record.student.name}"></td>
+            <td class="p-4" th:text="${record.course.name}"></td>
+            <td class="p-4" th:text="${record.date}"></td>
+            <td class="p-4" th:text="${record.present ? '✔️ Present' : '❌ Absent'}"
+                th:classappend="${record.present} ? 'text-green-600' : 'text-red-600'"></td>
+            <td class="p-4" th:text="${record.course.staff.name}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+<!-- Auto-submit Script -->
+<script>
+    document.querySelectorAll('.auto-submit').forEach(el => {
+        el.addEventListener('change', () => {
+            document.getElementById('filterForm').submit();
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -3,26 +3,44 @@
 <head>
     <title>Add Staff - Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .gradient-btn {
+            background: linear-gradient(to bottom, #B4EC51, #429321);
+        }
+        .gradient-btn:hover {
+            filter: brightness(0.9);
+        }
+        .gradient-heading {
+            background: linear-gradient(to right, #B4EC51, #429321);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-form-header {
+            background: linear-gradient(to right, #B4EC51, #429321);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
 <div class="flex h-screen">
     <!-- Sidebar -->
-    <div class="w-64 bg-blue-700 text-white p-6">
+    <div class="w-64 text-white p-6" style="background: linear-gradient(to bottom, #B4EC51, #429321);">
         <h2 class="text-xl font-bold mb-6">Admin Panel</h2>
         <ul class="space-y-4">
             <li><a href="/admin/dashboard" class="hover:underline">Dashboard</a></li>
             <li><a href="/admin/students" class="hover:underline">Manage Students</a></li>
             <li><a href="/admin/courses" class="hover:underline">Courses</a></li>
-            <li><a href="/admin/staff/add" class="hover:underline font-semibold">Teachers (Staff)</a></li>
             <li><a href="/admin/attendance" class="hover:underline">Attendance</a></li>
-            <li><a href="/admin/payments" class="hover:underline">Payments</a></li>
+            <li><a href="/admin/fees" class="hover:underline">Payments</a></li>
             <li><a href="/admin/settings" class="hover:underline">Settings</a></li>
         </ul>
     </div>
 
     <!-- Content Area -->
     <div class="flex-1 p-8 overflow-y-auto">
-        <h1 class="text-3xl font-bold mb-6 text-blue-700">Add New Staff Member</h1>
+        <h1 class="text-3xl font-bold mb-6 gradient-heading">Add New Staff Member</h1>
 
         <form th:action="@{/admin/staff/save}" method="post" class="bg-white p-6 rounded-lg shadow-md max-w-lg">
             <div class="mb-4">
@@ -49,7 +67,7 @@
                        class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Staff</button>
+            <button type="submit" class="gradient-btn text-white px-4 py-2 rounded hover:bg-blue-700">Add Staff</button>
         </form>
 
         <!-- Department Filter -->
@@ -64,10 +82,10 @@
         </div>
 
         <!-- Staff List -->
-        <div id="staffList" class="space-y-4 max-w-lg">
+        <div id="staffList" class="flex flex-wrap gap-4 max-w-full">
             <div th:each="staff : ${staffList}"
                  th:attr="data-department=${staff.department}"
-                 class="p-4 bg-white rounded shadow">
+                 class="p-4 bg-white rounded shadow w-64">
                 <p><strong th:text="${staff.name}">Staff Name</strong></p>
                 <p>Email: <span th:text="${staff.email}"></span></p>
                 <p>Phone: <span th:text="${staff.phone}"></span></p>

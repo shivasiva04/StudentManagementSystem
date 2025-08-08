@@ -1,8 +1,10 @@
 package com.shivasiva.student.management.system.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,16 +24,22 @@ public class Student {
 
     private String phone;
 
+    private String semester;
+
     private String department;
 
     private boolean registered;
 
-    // ✅ Many-to-Many Relationship with Course
+
     @ManyToMany
     @JoinTable(
             name = "student_courses",
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
-    private List<Course> courses; // holds list of enrolled courses
+    @JsonBackReference
+    private List<Course> courses = new ArrayList<>();
+
+
+
 }

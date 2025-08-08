@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Course for Attendance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">📋 Select a Course to Mark Attendance</h1>
+
+    <form action="/staff/attendance/mark" method="get">
+        <label for="courseId" class="block mb-2 font-medium">Choose Course:</label>
+        <select name="courseId" id="courseId" class="w-full p-2 border rounded">
+            <option value="">-- Select --</option>
+            <option th:each="course : ${courses}"
+                    th:value="${course.id}"
+                    th:text="${course.name + ' (' + course.code + ')'}"></option>
+        </select>
+
+        <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Proceed to Mark Attendance
+        </button>
+    </form>
+
+    <a href="/staff/dashboard" class="mt-6 inline-block text-blue-600 hover:underline">⬅ Back to Dashboard</a>
+</div>
+</body>
+</html>

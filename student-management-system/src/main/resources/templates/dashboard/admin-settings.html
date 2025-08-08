@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<div class="max-w-3xl mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-6 text-green-700">Admin Settings</h1>
+
+    <!-- Avatar Card -->
+    <div class="flex items-center space-x-4 mb-6">
+        <!-- Avatar with first letter -->
+        <div class="w-16 h-16 rounded-full bg-green-700 text-white flex items-center justify-center text-2xl font-bold">
+            <span th:text="${userName.substring(0, 1).toUpperCase()}">A</span>
+        </div>
+        <!-- Name & Email -->
+        <div>
+            <h2 class="text-xl font-semibold text-gray-800" th:text="${userName}">User Name</h2>
+            <p class="text-gray-600" th:text="${userEmail}">user@example.com</p>
+        </div>
+    </div>
+
+    <!-- Details -->
+    <div class="space-y-4 text-gray-800">
+        <div>
+            <label class="block font-semibold">Full Name:</label>
+            <p th:text="${userName}">User Name</p>
+        </div>
+        <div>
+            <label class="block font-semibold">Email Address:</label>
+            <p th:text="${userEmail}">user@example.com</p>
+        </div>
+        <div>
+            <label class="block font-semibold">Account Created At:</label>
+            <p>
+                Date: <span th:text="${#temporals.format(createdAt, 'yyyy-MM-dd')}">2025-02-07</span><br>
+                Time: <span th:text="${#temporals.format(createdAt, 'HH:mm:ss')}">16:11:02</span>
+            </p>
+        </div>
+
+    </div>
+
+    <div class="mt-6">
+        <a href="/admin/dashboard" class="text-green-700 hover:underline">← Back to Dashboard</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -65,7 +65,24 @@ public class CourseController {
 
     @GetMapping("/delete/{id}")
     public String deleteCourse(@PathVariable Long id) {
-        courseRepository.deleteById(id);
-        return "redirect:/admin/courses?success=Course+deleted";
+        try {
+            Course course = courseRepository.findById(id).orElse(null);
+            if (course != null) {
+                // Clear the students enrolled in this course
+                course.getStudents().forEach(student -> student.getCourses().remove(course));
+                course.getStudents().clear();
+                courseRepository.save(course); // update to reflect student unbinding
+
+                // Now delete the course safely
+                courseRepository.delete(course);
+
+                return "redirect:/admin/courses?success=Course+deleted+successfully";
+            } else {
+                return "redirect:/admin/courses?error=Course+not+found";
+            }
+        } catch (Exception e) {
+            return "redirect:/admin/courses?error=Could+not+delete+course+-+students+may+still+be+enrolled";
+        }
     }
+
 }

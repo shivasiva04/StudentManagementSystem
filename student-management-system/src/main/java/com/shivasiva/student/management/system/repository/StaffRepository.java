@@ -1,12 +1,21 @@
 package com.shivasiva.student.management.system.repository;
 
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import com.shivasiva.student.management.system.model.Staff;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
-@Repository
+import java.util.Optional;
+
 public interface StaffRepository extends JpaRepository<Staff, Long> {
-    Optional<Staff> findByEmail(String email);
-}
+    Optional<Staff> findByEmailIgnoreCase(String email);
 
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Staff s SET s.registered = true WHERE s.email = :email")
+    void markAsRegisteredByEmail(String email);
+
+    Optional<Staff> findByEmailIgnoreCaseOrNameIgnoreCase(String email, String name);
+}

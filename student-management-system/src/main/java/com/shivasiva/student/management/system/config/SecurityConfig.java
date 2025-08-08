@@ -46,21 +46,22 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/signup", "/verify-otp", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")  // Only ADMIN role can access admin URLs
-                        .requestMatchers("/student/**").hasRole("STUDENT") // If you have student-specific dashboards
+                        .requestMatchers("/", "/signup", "/verify-otp", "/staff/signup", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/staff/**").hasRole("STAFF")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/") // your login page
-                        .loginProcessingUrl("/login")
+                        .loginPage("/")                          // This must match your login form page
+                        .loginProcessingUrl("/login")            // Spring Security will POST here
                         .successHandler(customSuccessHandler)
                         .failureUrl("/?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
@@ -71,3 +72,8 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
+
+
+
+

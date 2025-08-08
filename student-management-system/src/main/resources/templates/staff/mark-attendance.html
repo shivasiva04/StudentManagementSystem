@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mark Attendance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+<div class="max-w-4xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="/staff/attendance"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow-sm
+                  hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">
+            <!-- Back Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Select Course
+        </a>
+    </div>
+</div>
+
+
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold mb-6 text-blue-700" th:text="'📘 Mark Attendance for: ' + ${course.name}">Mark Attendance</h2>
+
+
+
+    <!-- Attendance Date Selector -->
+    <form id="attendanceDateForm" method="get" th:action="@{/staff/attendance/mark}" class="mb-6">
+        <input type="hidden" name="courseId" th:value="${course.id}" />
+        <label for="attendanceDate" class="block font-semibold mb-1">📅 Select Date</label>
+        <div class="flex items-center gap-2">
+            <input type="date" id="attendanceDate" name="date" th:value="${attendanceDate}" required class="border border-gray-300 px-3 py-2 rounded" onchange="document.getElementById('attendanceDateForm').submit()" />
+        </div>
+    </form>
+
+
+    <!-- Show if attendance already submitted -->
+
+    <div th:if="${justSubmitted}" class="text-green-600 bg-green-100 p-3 rounded mb-4">
+        ✅ Attendance for this course on <strong th:text="${attendanceDate}"></strong> has been submitted successfully.
+    </div>
+
+    <!-- ⚠️ Show if already submitted -->
+    <div th:if="${alreadySubmitted}" class="text-yellow-800 bg-yellow-100 p-3 rounded mb-4">
+        ⚠️ Attendance for this course on <strong th:text="${attendanceDate}"></strong> has already been submitted.
+    </div>
+
+
+
+
+
+    <!-- Attendance Form (only if not submitted) -->
+    <form th:if="${!attendanceSubmitted}" th:action="@{/staff/attendance/mark}" method="post" class="space-y-4">
+        <input type="hidden" name="courseId" th:value="${course.id}" />
+        <input type="hidden" name="date" th:value="${attendanceDate}" />
+
+        <!-- Student List -->
+        <ul class="space-y-3">
+            <li th:each="student : ${students}" class="flex items-center justify-between bg-gray-50 px-4 py-2 rounded shadow">
+                <div class="text-gray-800 font-medium" th:text="${student.name}">Student Name</div>
+                <div class="space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" th:name="${'attendance_' + student.id}" value="present" required class="accent-green-600">
+                        <span class="ml-1 text-green-600 font-semibold">✅ Present</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" th:name="${'attendance_' + student.id}" value="absent" class="accent-red-600">
+                        <span class="ml-1 text-red-600 font-semibold">❌ Absent</span>
+                    </label>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Submit Button -->
+        <div class="pt-6">
+            <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                📝 Submit Attendance
+            </button>
+        </div>
+    </form>
+
+
+    <!-- Divider -->
+    <hr class="my-6 border-t">
+
+    <!-- Attendance Records -->
+    <div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">📊 Attendance Records</h3>
+
+        <!-- Filter by Date -->
+        <form method="get" th:action="@{/staff/attendance/view}" class="mb-4 flex items-center space-x-2">
+            <input type="hidden" name="courseId" th:value="${course.id}" />
+            <label for="filterDate" class="font-medium">📅 Filter by Date:</label>
+            <input type="date" name="date" id="filterDate" th:value="${filterDate}" class="px-3 py-1 border rounded" />
+            <button type="submit" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">🔍 Filter</button>
+        </form>
+
+
+        <!-- Records Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full border border-gray-300 rounded-lg">
+                <thead class="bg-blue-100 text-left">
+                <tr>
+                    <th class="p-2">👤 Student Name</th>
+                    <th class="p-2">📅 Date</th>
+                    <th class="p-2">📌 Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="record : ${attendanceRecords}" class="border-t">
+                    <td class="p-2" th:text="${record.student.name}">Name</td>
+                    <td class="p-2" th:text="${record.date}">2025-07-20</td>
+                    <td class="p-2 font-semibold"
+                        th:text="${record.present} ? 'Present' : 'Absent'"
+                        th:classappend="${record.present} ? 'text-green-600' : 'text-red-600'">
+                    </td>
+
+                </tr>
+                <tr th:if="${#lists.isEmpty(attendanceRecords)}">
+                    <td colspan="3" class="text-center text-gray-500 p-4">No attendance records found.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

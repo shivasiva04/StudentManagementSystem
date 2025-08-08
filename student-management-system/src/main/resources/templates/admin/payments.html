@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Fees</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-btn {
+            background: linear-gradient(to bottom, #B4EC51, #429321);
+        }
+        .gradient-btn:hover {
+            filter: brightness(0.9);
+        }
+        .gradient-heading {
+            background: linear-gradient(to right, #B4EC51, #429321);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-form-header {
+            background: linear-gradient(to right, #B4EC51, #429321);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div class="flex">
+    <!-- Sidebar -->
+    <div class="w-64 text-white p-6" style="background: linear-gradient(to bottom, #B4EC51, #429321);">
+        <h2 class="text-xl font-bold mb-6">Admin Panel</h2>
+        <ul class="space-y-4">
+            <li><a href="/admin/dashboard" class="hover:underline">Dashboard</a></li>
+            <li><a href="/admin/staff/add" class="hover:underline font-semibold">Staff</a></li>
+            <li><a href="/admin/students" class="hover:underline">Manage Students</a></li>
+            <li><a href="/admin/courses" class="hover:underline">Courses</a></li>
+            <li><a href="/admin/attendance" class="hover:underline">Attendance</a></li>
+            <li><a href="/admin/settings" class="hover:underline">Settings</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-10">
+        <h1 class="text-3xl font-bold mb-6 gradient-heading">Manage Fees</h1>
+
+        <form th:action="@{/admin/fees/add}" method="post"
+              class="bg-white p-6 rounded shadow-md max-w-full space-y-4">
+            <div class="flex flex-col lg:flex-row gap-4">
+                <!-- Department -->
+                <div class="flex-1">
+                    <label class="block mb-1 font-semibold">Department</label>
+                    <select name="department" class="w-full border p-2 rounded" required>
+                        <option value="">Select Department</option>
+                        <option th:each="dept : ${departments}"
+                                th:value="${dept}"
+                                th:text="${dept}"
+                                th:selected="${selectedDepartment == dept}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Semester -->
+                <div class="flex-1">
+                    <label class="block mb-1 font-semibold">Semester</label>
+                    <select name="semester" class="w-full border p-2 rounded" required>
+                        <option value="">Select Semester</option>
+                        <option th:each="i : ${#numbers.sequence(1,8)}"
+                                th:value="${i}" th:text="Semester + ${i}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Amount -->
+                <div class="flex-1">
+                    <label class="block mb-1 font-semibold">Fee Amount</label>
+                    <input type="number" name="amount" class="w-full border p-2 rounded" placeholder="Enter amount" required/>
+                </div>
+
+                <!-- Payment Date -->
+                <div class="flex-1">
+                    <label class="block mb-1 font-semibold">Payment Date</label>
+                    <input type="date" name="paymentDate" class="w-full border p-2 rounded" required/>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-4">
+                <button type="submit"
+                        class="gradient-btn text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Allot Fees to All Students
+                </button>
+            </div>
+        </form>
+
+
+
+        <!-- Allotted Fees Section -->
+        <div class="mt-10">
+            <h2 class="text-xl font-bold mb-4">Allotted Fees (Admin Level)</h2>
+            <div class="mt-2 mb-4">
+                <label class="block mb-2 text-lg font-semibold text-gray-700">Filter</label>
+                <form th:action="@{/admin/fees}" method="get" class="flex flex-col sm:flex-row gap-4 items-start sm:items-end" id="filterForm">
+                    <div class="flex flex-col w-full sm:w-1/2">
+                        <label class="mb-1 text-sm font-medium text-gray-700">Department</label>
+                        <select name="department" class="border p-2 rounded w-full" required onchange="submitFilterForm()">
+                            <option value="">Select Department</option>
+                            <option th:each="dept : ${departments}"
+                                    th:value="${dept}"
+                                    th:text="${dept}"
+                                    th:selected="${selectedDepartment == dept}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col w-full sm:w-1/2">
+                        <label class="mb-1 text-sm font-medium text-gray-700">Semester</label>
+                        <select name="semester" class="border p-2 rounded w-full" required onchange="submitFilterForm()">
+                            <option value="">Select Semester</option>
+                            <option th:each="i : ${#numbers.sequence(1,8)}"
+                                    th:value="${i}"
+                                    th:text="${i}"
+                                    th:selected="${selectedSemester == i.toString()}">
+                            </option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+
+            <table class="min-w-full bg-white rounded shadow overflow-hidden">
+                <thead style="background: linear-gradient(to bottom, #B4EC51, #429321);" class="text-white">
+                <tr>
+                    <th class="py-2 px-4 text-left">Department</th>
+                    <th class="py-2 px-4 text-left">Semester</th>
+                    <th class="py-2 px-4 text-left">Amount</th>
+                    <th class="py-2 px-4 text-left">Allotted Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="allotment : ${allottedFees}" class="border-t">
+                    <td class="py-2 px-4" th:text="${allotment.department}">CSE</td>
+                    <td class="py-2 px-4" th:text="${allotment.semester}">1</td>
+                    <td class="py-2 px-4" th:text="'₹' + ${allotment.amount}">₹0</td>
+                    <td class="py-2 px-4" th:text="${allotment.paymentDate}">2025-07-20</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(allottedFees)}">
+                    <td colspan="4" class="py-4 text-center text-gray-500">No fees allotted yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+
+
+        <!-- Fee Records Table -->
+        <div class="mt-8">
+            <h2 class="text-xl font-bold mb-4">Fees Records</h2>
+            <table class="min-w-full bg-white rounded shadow overflow-hidden">
+                <thead class="bg-blue-700 text-white">
+                <tr>
+                    <th class="py-2 px-4 text-left">Student</th>
+                    <th class="py-2 px-4 text-left">Amount</th>
+                    <th class="py-2 px-4 text-left">Date</th>
+                    <th class="py-2 px-4 text-left">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="fee : ${fees}" class="border-t">
+                    <td class="py-2 px-4" th:text="${fee.student.name}"></td>
+                    <td class="py-2 px-4" th:text="'₹' + ${fee.amount}"></td>
+                    <td class="py-2 px-4" th:text="${fee.paymentDate}"></td>
+                    <td class="py-2 px-4" th:text="${fee.paid ? 'Paid' : 'Unpaid'}"
+                        th:classappend="${fee.paid ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="toast-message"
+     class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 opacity-0 translate-x-10 transition-all duration-500 ease-out"
+     th:if="${successMessage}"
+     th:text="${successMessage}">
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const toast = document.getElementById('toast-message');
+        if (toast) {
+            // Show toast with slide-in animation
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-x-10');
+                toast.classList.add('opacity-100', 'translate-x-0');
+            }, 100);
+
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-x-0');
+                toast.classList.add('opacity-0', 'translate-x-10');
+            }, 3000);
+
+            // Remove from DOM after animation ends
+            setTimeout(() => {
+                toast.remove();
+            }, 3500);
+        }
+    });
+
+    function submitFilterForm() {
+        document.getElementById('filterForm').submit();
+    }
+</script>
+
+
+
+</body>
+</html>

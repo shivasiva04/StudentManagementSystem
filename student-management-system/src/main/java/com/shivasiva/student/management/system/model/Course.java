@@ -1,12 +1,13 @@
 package com.shivasiva.student.management.system.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data  // Lombok: Generates getters, setters, toString, equals, hashCode
@@ -21,6 +22,15 @@ public class Course {
     private String code;
     private String semester;
     private String department;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "staff_id")
+    private Staff staff;
+
+    @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
+    private List<Student> students = new ArrayList<>();
+
 
     private String description;
 }

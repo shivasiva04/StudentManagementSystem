@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class StaffService {
-
     private final StaffRepository staffRepository;
 
     public StaffService(StaffRepository staffRepository) {
@@ -25,6 +26,16 @@ public class StaffService {
     }
 
     public Optional<Staff> findByEmail(String email) {
-        return staffRepository.findByEmail(email.trim());
+        return staffRepository.findByEmailIgnoreCase(email.trim());
+    }
+
+    public Optional<Staff> findByEmailOrName(String loginValue) {
+        return staffRepository.findByEmailIgnoreCaseOrNameIgnoreCase(loginValue.trim(), loginValue.trim());
+    }
+
+
+    public void markAsRegistered(String email) {
+        staffRepository.markAsRegisteredByEmail(email.trim());
     }
 }
+

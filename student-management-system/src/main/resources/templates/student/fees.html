@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Fee Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-lg rounded-lg p-6">
+
+        <div class="mb-4">
+            <a href="/student/dashboard"
+               class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold text-sm">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+        <h1 class="text-3xl font-bold mb-4 text-center text-indigo-700">Student Fee Summary</h1>
+
+        <!-- Student info -->
+        <div class="mb-6 text-center text-gray-700 font-medium">
+            <p th:text="${'Department: ' + student.department + ', Semester: ' + (#strings.isEmpty(selectedSemester) ? 'All' : selectedSemester)}"></p>
+        </div>
+
+
+        <!-- Fee Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="feeSummary">
+            <div class="bg-green-100 p-4 rounded-lg shadow">
+                <h3 class="text-lg font-semibold text-green-800">Paid Fees</h3>
+                <p class="text-2xl font-bold mt-2" id="paidAmount">₹0</p>
+            </div>
+            <div class="bg-red-100 p-4 rounded-lg shadow">
+                <h3 class="text-lg font-semibold text-red-800">Unpaid Fees</h3>
+                <p class="text-2xl font-bold mt-2" id="unpaidAmount">₹0</p>
+            </div>
+            <div class="bg-blue-100 p-4 rounded-lg shadow">
+                <h3 class="text-lg font-semibold text-blue-800">Total Fees</h3>
+                <p class="text-2xl font-bold mt-2" id="totalAmount">₹0</p>
+            </div>
+        </div>
+
+
+        <!-- Semester Filter -->
+        <form th:action="@{/student/fees}" method="get" class="mb-6">
+            <label for="semester" class="block text-sm font-medium text-gray-700 mb-2">Filter by Semester</label>
+            <div class="flex items-center">
+                <select name="filteredSemester" id="semester"
+                        class="form-select w-full md:w-1/3 border-gray-300 rounded-md shadow-sm px-3 py-2">
+                    <option value="" th:selected="${selectedSemester == null or selectedSemester.isEmpty()}">All</option>
+                    <option th:each="sem : ${semesters}"
+                            th:value="${sem}"
+                            th:text="${sem}"
+                            th:selected="${sem == selectedSemester}">1</option>
+                </select>
+                <button type="submit" class="ml-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded shadow">
+                    Filter
+                </button>
+            </div>
+        </form>
+
+        <!-- Fee Table -->
+        <div>
+            <h3 class="text-xl font-bold mb-4">Allotted Fees</h3>
+
+            <div th:if="${#lists.isEmpty(filteredAllottedFees)}" class="text-red-600 text-center font-medium mb-6">
+                ⚠ No Allotted Fees Found!
+            </div>
+
+            <table th:if="${not #lists.isEmpty(filteredAllottedFees)}"
+                   class="min-w-full table-auto border border-gray-300 rounded-lg overflow-hidden shadow-md">
+                <thead class="bg-indigo-600 text-white">
+                <tr>
+                    <th class="border px-4 py-2 text-left">Department</th>
+                    <th class="border px-4 py-2 text-left">Semester</th>
+                    <th class="border px-4 py-2 text-left">Amount</th>
+                    <th class="border px-4 py-2 text-left">Payment Date</th>
+                    <th class="border px-4 py-2 text-left">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="fee : ${filteredAllottedFees}" class="bg-white hover:bg-gray-50">
+                    <td class="border px-4 py-2" th:text="${fee.department}">CSE</td>
+                    <td class="border px-4 py-2" th:text="${fee.semester}">1</td>
+                    <td class="border px-4 py-2" th:text="'₹' + ${fee.amount}">₹1000</td>
+                    <td class="border px-4 py-2"
+                        th:text="${fee.paymentDate != null ? #temporals.format(fee.paymentDate, 'dd MMMM yyyy') : 'Not Paid'}">
+                    </td>
+                    <!-- Inside the Status <td> -->
+                    <td class="border px-4 py-2">
+                        <th:block th:if="${allottedFeePaidStatus[fee.id]}">
+                            <span class="text-green-600 font-semibold">Paid</span>
+                        </th:block>
+                        <th:block th:unless="${allottedFeePaidStatus[fee.id]}">
+                            <button type="button"
+                                    class="bg-green-500 hover:bg-green-600 text-white font-semibold px-3 py-1 rounded open-pay-modal"
+                                    data-id="[[${fee.id}]]"
+                                    data-amount="[[${fee.amount}]]"
+                                    data-semester="[[${fee.semester}]]"
+                                    data-department="[[${fee.department}]]"
+                                    data-action-url="@{/student/payAllotted/{id}(id=${fee.id})}">
+                                Pay Now
+                            </button>
+
+                        </th:block>
+
+                    </td>
+
+
+
+                    <td class="hidden" th:text="${fee.paymentDate != null} ? 'paid' : 'unpaid'"></td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="payModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4 text-indigo-700">UPI Payment</h2>
+
+        <p class="text-sm text-gray-600 mb-1">Select Unified Payment Interface (UPI)</p>
+        <div class="grid grid-cols-3 gap-3 bg-blue-50 p-3 rounded mb-4 text-center text-sm text-gray-700">
+            <!-- GPay -->
+            <div class="bg-white p-3 rounded shadow hover:shadow-md transition">
+                <img src="/imagess/gpay.png" class="h-10 mx-auto mb-1" alt="GPay" />
+                <div>GPay</div>
+            </div>
+
+            <!-- PhonePe -->
+            <div class="bg-white p-3 rounded shadow hover:shadow-md transition">
+                <img src="/imagess/phonepe.png" class="h-10 mx-auto mb-1" alt="PhonePe" />
+                <div>PhonePe</div>
+            </div>
+
+            <!-- BHIM -->
+            <div class="bg-white p-3 rounded shadow hover:shadow-md transition">
+                <img src="/imagess/bhim.png" class="h-10 mx-auto mb-1" alt="BHIM" />
+                <div>BHIM</div>
+            </div>
+
+            <!-- Paytm -->
+            <div class="bg-white p-3 rounded shadow hover:shadow-md transition col-span-3">
+                <img src="/imagess/paytm.png" class="h-10 mx-auto mb-1" alt="Paytm" />
+                <div>Paytm</div>
+            </div>
+
+            <!-- Other VPA Label -->
+            <div class="text-center text-sm text-gray-500 col-span-3 mt-2">Other VPA</div>
+        </div>
+
+
+        <label for="vpaInput" class="block text-sm font-medium text-gray-700 mb-1">Virtual Payment Address (VPA)</label>
+        <input type="text" id="vpaInput" name="vpa" class="w-full px-3 py-2 border rounded text-sm mb-3" placeholder="e.g. username@upi" />
+
+        <!-- Form -->
+        <form id="payForm" method="post">
+            <input type="hidden" name="feeId" id="feeIdInput" />
+
+            <div class="flex justify-end gap-3 mt-4">
+                <button type="button" id="cancelPay"
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
+                <button type="submit"
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold">
+                    Make Payment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+    function calculateTotals() {
+        const rows = document.querySelectorAll("table tbody tr");
+        let paid = 0, unpaid = 0;
+
+        rows.forEach(row => {
+            const amountText = row.querySelector("td:nth-child(3)")?.textContent.replace(/[₹,]/g, "").trim();
+            const statusCell = row.querySelector("td:nth-child(5)");
+            const amount = parseFloat(amountText);
+
+            if (!isNaN(amount)) {
+                if (statusCell.textContent.includes('Paid')) {
+                    paid += amount;
+                } else {
+                    unpaid += amount;
+                }
+            }
+        });
+
+        const total = paid + unpaid;
+        document.getElementById("paidAmount").textContent = `₹${paid.toLocaleString()}`;
+        document.getElementById("unpaidAmount").textContent = `₹${unpaid.toLocaleString()}`;
+        document.getElementById("totalAmount").textContent = `₹${total.toLocaleString()}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', function () {
+        calculateTotals();
+
+        const modal = document.getElementById('payModal');
+        const payForm = document.getElementById('payForm');
+
+        document.querySelectorAll(".open-pay-modal").forEach(button => {
+            button.addEventListener("click", function () {
+                const feeId = this.dataset.id;
+                const actionUrl = this.dataset.actionUrl;
+
+                // Set form action and hidden input
+                payForm.setAttribute("action", actionUrl);
+                document.getElementById("feeIdInput").value = feeId;
+
+                // Reset VPA field
+                document.getElementById("vpaInput").value = "";
+
+                // Show modal
+                modal.classList.remove("hidden");
+            });
+        });
+
+        // Cancel button
+        document.getElementById("cancelPay").addEventListener("click", function () {
+            modal.classList.add("hidden");
+        });
+
+        // On form submit: validate VPA
+        payForm.addEventListener("submit", function (e) {
+            const vpa = document.getElementById("vpaInput").value.trim();
+            if (!vpa || !vpa.includes("@")) {
+                e.preventDefault();
+                alert("Please enter a valid VPA (e.g. username@upi)");
+            }
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>
